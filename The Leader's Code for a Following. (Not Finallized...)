@@ -1,0 +1,73 @@
+//Credits to 0x00, Spartaar's COde and to the Unoffical Github, by JourneyOver.  
+//Also I am a noob at coding... this is a way to do this, but there are alot more efficient ways to do this. 
+
+
+var mode = 1; 
+
+var group = ["name1","name2", "name3", "name4","name5"];
+
+if (mode == 1) {
+	setInterval(function () {
+    	if (character.name == group[0]) {
+        	for (let i = 1; i < group.length; i++) {
+            	let name = group[i];
+            	send_party_invite(name);
+        	}
+    	} else {
+        	if (character.party) {
+            	if (character.party != group[0]) {
+                	parent.socket.emit("party", {event: "leave"})
+            	}
+       		} else {
+            	send_party_request(group[0]);
+        	}
+    	}
+	}, 1000*2);
+}
+
+
+
+
+var attack_mode=true
+
+setInterval(function(){
+	
+	if(character.max_hp - character.hp > 200) {
+		use("hp");
+	}
+	if(character.max_mp - character.mp > 300) {
+		use("mp");
+	}
+	
+	loot();
+
+	if(!attack_mode || character.rip || is_moving(character)) return;
+
+	var target=get_targeted_monster();
+	if(!target)
+	{
+		target=get_nearest_monster({min_xp:12000,max_att:120});
+		if(target) change_target(target);
+		else
+		{
+			set_message("No Monsters");
+			return;
+		}
+	}   
+	
+	if(!in_attack_range(target))
+	{
+		if(target) change_target(target);
+		//move(
+			//character.real_x+(target.real_x-character.real_x)/2,
+			//character.real_y+(target.real_y-character.real_y)/2
+		//	);
+		// Walk half the distance
+	}
+	else if(can_attack(target))
+	{
+		set_message("Attacking");
+		attack(target);
+	}
+
+},250); // Loops every 1/4 seconds.
